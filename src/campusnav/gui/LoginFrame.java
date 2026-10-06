@@ -5,92 +5,67 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class LoginFrame extends JFrame {
+public class LoginFrame extends BaseFrame implements ActionListener {
 
-    private JLabel usernameLabel;
-    private JLabel passwordLabel;
-
-    private JTextField usernameField;
-    private JPasswordField passwordField;
-
-    private JButton loginButton;
-    private JButton adminButton;
-    private JButton backButton;
+    private JTextField usernameField = new JTextField();
+    private JPasswordField passwordField = new JPasswordField();
+    private JButton loginBtn = createButton("Login");
+    private JButton backBtn = createButton("Back", GREY);
 
     public LoginFrame() {
+        super("Login", 380, 300);
 
-        setTitle("CampusNav - Login");
+        usernameField.setFont(FONT);
+        passwordField.setFont(FONT);
 
-        setSize(500, 350);
+        JPanel body = createBody(new GridLayout(2, 2, 10, 20));
+        body.setBorder(BorderFactory.createEmptyBorder(30, 30, 10, 30));
+        body.add(new JLabel("Username"));
+        body.add(usernameField);
+        body.add(new JLabel("Password"));
+        body.add(passwordField);
+        add(body, BorderLayout.CENTER);
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JPanel bar = createButtonBar();
+        bar.add(backBtn);
+        bar.add(loginBtn);
+        add(bar, BorderLayout.SOUTH);
 
-        setLocationRelativeTo(null);
+        loginBtn.addActionListener(this);
+        backBtn.addActionListener(this);
+    }
 
-        setLayout(new GridLayout(4, 2, 10, 10));
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == backBtn) {
+            dispose();
+            Navigation.showWelcome();
+            return;
+        }
+        String username = usernameField.getText().trim();
+        String password = new String(passwordField.getPassword());
+        try {
+            String role = authenticate(username, password);
+            Session.login(username);
+            dispose();
+            if (role.equals("admin")) {
+                Navigation.showAdmin();
+            } else {
+                Navigation.showReportIssue();
+            }
+        } catch (InvalidLoginException ex) {          // Exception handling
+            JOptionPane.showMessageDialog(this, ex.getMessage(),
+                    "Login Failed", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
-        usernameLabel = new JLabel("Username:");
-
-        passwordLabel = new JLabel("Password:");
-
-        usernameField = new JTextField();
-
-        passwordField = new JPasswordField();
-
-        loginButton = new JButton("Student Login");
-
-        adminButton = new JButton("Admin Login");
-
-        backButton = new JButton("Back");
-
-        add(usernameLabel);
-        add(usernameField);
-
-        add(passwordLabel);
-        add(passwordField);
-
-        add(loginButton);
-        add(adminButton);
-
-        add(backButton);
-
-        loginButton.addActionListener(
-                new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-
-                        Navigation.showHome();
-
-                        dispose();
-                    }
-                }
-        );
-
-        adminButton.addActionListener(
-                new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-
-                        Navigation.showAdmin();
-
-                        dispose();
-                    }
-                }
-        );
-
-        backButton.addActionListener(
-                new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-
-                        Navigation.showWelcome();
-
-                        dispose();
-                    }
-                }
-        );
+    // demo accounts; throws our own exception for wrong details
+    private String authenticate(String user, String pass) throws InvalidLoginException {
+        if (user.equals("admin") && pass.equals("admin123")) {
+            return "admin";
+        }
+        if (user.equals("student") && pass.equals("1234")) {
+            return "student";
+        }
+        throw new InvalidLoginException("Wrong username or password.");
     }
 }

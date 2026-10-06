@@ -5,118 +5,56 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class SearchFrame extends JFrame {
+public class SearchFrame extends BaseFrame implements ActionListener {
 
-    private JLabel titleLabel;
-
-    private JTextField searchField;
-
-    private JButton searchButton;
-    private JButton destinationButton;
-    private JButton backButton;
-
-    private JTextArea resultArea;
+    private JTextField searchField = new JTextField();
+    private JTextArea resultArea = new JTextArea("Search results will appear here.");
+    private JButton searchBtn = createButton("Search");
+    private JButton destinationBtn = createButton("View Destination");
+    private JButton backBtn = createButton("Back", GREY);
 
     public SearchFrame() {
+        super("Search", 440, 380);
 
-        setTitle("CampusNav - Search");
-
-        setSize(600, 450);
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        setLocationRelativeTo(null);
-
-        setLayout(new BorderLayout(10, 10));
-
-        titleLabel = new JLabel(
-                "Find a Campus Destination",
-                SwingConstants.CENTER
-        );
-
-        titleLabel.setFont(
-                new Font("Arial", Font.BOLD, 24)
-        );
-
-        JPanel searchPanel = new JPanel();
-
-        searchField = new JTextField(25);
-
-        searchButton = new JButton("Search");
-
-        searchPanel.add(searchField);
-        searchPanel.add(searchButton);
-
-        resultArea = new JTextArea();
-
+        searchField.setFont(FONT);
+        resultArea.setFont(FONT);
         resultArea.setEditable(false);
+        resultArea.setMargin(new Insets(10, 10, 10, 10));
 
-        resultArea.setText(
-                "Search results will appear here."
-        );
+        JPanel top = new JPanel(new BorderLayout(8, 0));
+        top.setOpaque(false);
+        top.add(searchField, BorderLayout.CENTER);
+        top.add(searchBtn, BorderLayout.EAST);
 
-        destinationButton =
-                new JButton("View Destination");
+        JPanel body = createBody(new BorderLayout(0, 10));
+        body.add(top, BorderLayout.NORTH);
+        body.add(new JScrollPane(resultArea), BorderLayout.CENTER);
+        add(body, BorderLayout.CENTER);
 
-        backButton =
-                new JButton("Back");
+        JPanel bar = createButtonBar();
+        bar.add(backBtn);
+        bar.add(destinationBtn);
+        add(bar, BorderLayout.SOUTH);
 
-        JPanel bottomPanel = new JPanel();
+        searchBtn.addActionListener(this);
+        destinationBtn.addActionListener(this);
+        backBtn.addActionListener(this);
+    }
 
-        bottomPanel.add(destinationButton);
-        bottomPanel.add(backButton);
-
-        add(titleLabel, BorderLayout.NORTH);
-
-        add(searchPanel, BorderLayout.CENTER);
-
-        add(
-                new JScrollPane(resultArea),
-                BorderLayout.SOUTH
-        );
-
-        add(bottomPanel, BorderLayout.WEST);
-
-        searchButton.addActionListener(
-                new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-
-                        resultArea.setText(
-                                "Destination found:\n\n"
-                                        + "Library\n"
-                                        + "Main Block\n"
-                                        + "2nd Floor"
-                        );
-                    }
-                }
-        );
-
-        destinationButton.addActionListener(
-                new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-
-                        Navigation.showDestination();
-
-                        dispose();
-                    }
-                }
-        );
-
-        backButton.addActionListener(
-                new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-
-                        Navigation.showHome();
-
-                        dispose();
-                    }
-                }
-        );
+    public void actionPerformed(ActionEvent e) {
+        Object source = e.getSource();
+        if (source == searchBtn) {
+            if (searchField.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Enter a place name.");
+            } else {
+                resultArea.setText("Destination found:\n\nLibrary\nMain Block\n2nd Floor");
+            }
+        } else if (source == destinationBtn) {
+            dispose();
+            Navigation.showDestination();
+        } else {
+            dispose();
+            Navigation.showHome();
+        }
     }
 }

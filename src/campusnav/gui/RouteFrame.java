@@ -5,90 +5,43 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class RouteFrame extends JFrame {
+public class RouteFrame extends BaseFrame implements ActionListener {
 
-    private JLabel titleLabel;
-
-    private JTextArea routeArea;
-
-    private JButton backButton;
-    private JButton homeButton;
+    private JButton backBtn = createButton("Back", GREY);
+    private JButton homeBtn = createButton("Home");
 
     public RouteFrame() {
+        super("Route to Library", 420, 340);
 
-        setTitle("CampusNav - Route");
+        JTextArea route = new JTextArea(
+                "Start: Main Gate\n\n"
+                        + "1. Walk towards Main Block.\n"
+                        + "2. Enter the Main Block.\n"
+                        + "3. Go to the 2nd Floor.\n"
+                        + "4. Library is in Room 204.");
+        route.setFont(FONT);
+        route.setEditable(false);
+        route.setMargin(new Insets(10, 10, 10, 10));
 
-        setSize(600, 450);
+        JPanel body = createBody(new BorderLayout());
+        body.add(new JScrollPane(route), BorderLayout.CENTER);
+        add(body, BorderLayout.CENTER);
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JPanel bar = createButtonBar();
+        bar.add(backBtn);
+        bar.add(homeBtn);
+        add(bar, BorderLayout.SOUTH);
 
-        setLocationRelativeTo(null);
+        backBtn.addActionListener(this);
+        homeBtn.addActionListener(this);
+    }
 
-        setLayout(new BorderLayout());
-
-        titleLabel = new JLabel(
-                "Route to Library",
-                SwingConstants.CENTER
-        );
-
-        titleLabel.setFont(
-                new Font("Arial", Font.BOLD, 24)
-        );
-
-        routeArea = new JTextArea();
-
-        routeArea.setEditable(false);
-
-        routeArea.setText(
-                "Starting Point: Main Gate\n\n"
-                + "1. Walk towards Main Block.\n"
-                + "2. Enter the Main Block.\n"
-                + "3. Go to the 2nd Floor.\n"
-                + "4. Library is in Room 204."
-        );
-
-        backButton = new JButton("Back");
-
-        homeButton = new JButton("Home");
-
-        JPanel buttonPanel = new JPanel();
-
-        buttonPanel.add(backButton);
-        buttonPanel.add(homeButton);
-
-        add(titleLabel, BorderLayout.NORTH);
-
-        add(
-                new JScrollPane(routeArea),
-                BorderLayout.CENTER
-        );
-
-        add(buttonPanel, BorderLayout.SOUTH);
-
-        backButton.addActionListener(
-                new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-
-                        Navigation.showDestination();
-
-                        dispose();
-                    }
-                }
-        );
-
-        homeButton.addActionListener(
-                new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-
-                        Navigation.showHome();
-
-                        dispose();
-                    }
-                }
-        );
+    public void actionPerformed(ActionEvent e) {
+        dispose();
+        if (e.getSource() == backBtn) {
+            Navigation.showDestination();
+        } else {
+            Navigation.showHome();
+        }
     }
 }

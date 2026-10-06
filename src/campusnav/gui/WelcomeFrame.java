@@ -5,77 +5,38 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class WelcomeFrame extends JFrame {
+public class WelcomeFrame extends BaseFrame implements ActionListener {
 
-    private JLabel titleLabel;
-    private JLabel subtitleLabel;
-
-    private JButton startButton;
-    private JButton exitButton;
+    private JButton navigateBtn = createButton("Navigate Campus");
+    private JButton reportBtn = createButton("Report a Problem", new Color(230, 81, 0));
+    private JButton exitBtn = createButton("Exit", GREY);
 
     public WelcomeFrame() {
+        super("Welcome", 380, 320);
 
-        setTitle("CampusNav - Welcome");
+        JPanel body = createBody(new GridLayout(3, 1, 0, 12));
+        body.add(navigateBtn);
+        body.add(reportBtn);
+        body.add(exitBtn);
+        add(body, BorderLayout.CENTER);
 
-        setSize(600, 400);
+        navigateBtn.addActionListener(this);
+        reportBtn.addActionListener(this);
+        exitBtn.addActionListener(this);
+    }
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        setLocationRelativeTo(null);
-
-        setLayout(new BorderLayout());
-
-        titleLabel = new JLabel(
-                "Welcome to CampusNav",
-                SwingConstants.CENTER
-        );
-
-        titleLabel.setFont(
-                new Font("Arial", Font.BOLD, 28)
-        );
-
-        subtitleLabel = new JLabel(
-                "Campus Navigation System",
-                SwingConstants.CENTER
-        );
-
-        startButton = new JButton("Start");
-
-        exitButton = new JButton("Exit");
-
-        JPanel buttonPanel = new JPanel();
-
-        buttonPanel.add(startButton);
-        buttonPanel.add(exitButton);
-
-        add(subtitleLabel, BorderLayout.NORTH);
-
-        add(titleLabel, BorderLayout.CENTER);
-
-        add(buttonPanel, BorderLayout.SOUTH);
-
-        startButton.addActionListener(
-                new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-
-                        Navigation.showLogin();
-
-                        dispose();
-                    }
-                }
-        );
-
-        exitButton.addActionListener(
-                new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-
-                        System.exit(0);
-                    }
-                }
-        );
+    public void actionPerformed(ActionEvent e) {
+        Object source = e.getSource();
+        if (source == exitBtn) {
+            System.exit(0);
+        }
+        dispose();
+        if (source == navigateBtn) {
+            Navigation.showTerms();          // navigate: only terms needed
+        } else if (Session.isLoggedIn()) {
+            Navigation.showReportIssue();    // report: login needed
+        } else {
+            Navigation.showLogin();
+        }
     }
 }

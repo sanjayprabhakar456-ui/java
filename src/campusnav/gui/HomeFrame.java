@@ -5,91 +5,39 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class HomeFrame extends JFrame {
+public class HomeFrame extends BaseFrame implements ActionListener {
 
-    private JLabel titleLabel;
-
-    private JButton searchButton;
-    private JButton reportButton;
-    private JButton logoutButton;
+    private JButton searchBtn = createButton("Find Destination");
+    private JButton reportBtn = createButton("Report Issue", new Color(230, 81, 0));
+    private JButton backBtn = createButton("Main Menu", GREY);
 
     public HomeFrame() {
+        super("Home", 380, 320);
 
-        setTitle("CampusNav - Home");
+        JPanel body = createBody(new GridLayout(3, 1, 0, 12));
+        body.add(searchBtn);
+        body.add(reportBtn);
+        body.add(backBtn);
+        add(body, BorderLayout.CENTER);
 
-        setSize(600, 400);
+        searchBtn.addActionListener(this);
+        reportBtn.addActionListener(this);
+        backBtn.addActionListener(this);
+    }
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        setLocationRelativeTo(null);
-
-        setLayout(new BorderLayout());
-
-        titleLabel = new JLabel(
-                "CampusNav Home",
-                SwingConstants.CENTER
-        );
-
-        titleLabel.setFont(
-                new Font("Arial", Font.BOLD, 28)
-        );
-
-        searchButton =
-                new JButton("Find Destination");
-
-        reportButton =
-                new JButton("Report Issue");
-
-        logoutButton =
-                new JButton("Logout");
-
-        JPanel buttonPanel = new JPanel();
-
-        buttonPanel.add(searchButton);
-        buttonPanel.add(reportButton);
-        buttonPanel.add(logoutButton);
-
-        add(titleLabel, BorderLayout.CENTER);
-
-        add(buttonPanel, BorderLayout.SOUTH);
-
-        searchButton.addActionListener(
-                new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-
-                        Navigation.showSearch();
-
-                        dispose();
-                    }
-                }
-        );
-
-        reportButton.addActionListener(
-                new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-
-                        Navigation.showReportIssue();
-
-                        dispose();
-                    }
-                }
-        );
-
-        logoutButton.addActionListener(
-                new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-
-                        Navigation.showWelcome();
-
-                        dispose();
-                    }
-                }
-        );
+    public void actionPerformed(ActionEvent e) {
+        Object source = e.getSource();
+        dispose();
+        if (source == searchBtn) {
+            Navigation.showSearch();
+        } else if (source == reportBtn) {
+            if (Session.isLoggedIn()) {
+                Navigation.showReportIssue();
+            } else {
+                Navigation.showLogin();
+            }
+        } else {
+            Navigation.showWelcome();
+        }
     }
 }
